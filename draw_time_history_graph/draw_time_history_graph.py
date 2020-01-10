@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 import datetime
 import math
-from matplotlib import rc
-from matplotlib import font_manager
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import time
 import gc
@@ -18,8 +17,8 @@ import concurrent.futures
 from scipy import integrate
 
 # magic code
-rc('font',**{'family':'serif','serif':['Times New Roman']})
-# rc('text', usetex=True)
+mpl.rc('font',**{'family':'serif','serif':['Times New Roman']})
+# mpl.rc('text', usetex=True)
 
 # required parameters
 data_stage = 1 # 0:precon 1:consolidation 2:liquefaction
@@ -30,14 +29,8 @@ ClipGauge_installment = False
 file_list_out = []
 file_list_spe = []
 
-def make_patch_spines_invisible(ax):
-    ax.set_frame_on(True)
-    ax.patch.set_visible(False)
-    for sp in ax.spines.values():
-        sp.set_visible(False)
-
 # set data directory
-dat_dir = r"F:\OneDrive\01_Research\01_Doctor\07_Triaxial_Test\07_Result\2020\20200108"
+dat_dir = r"F:\OneDrive\01_Research\01_Doctor\07_Triaxial_Test\07_Result\2020\20200106"
 def main():
     # create result directory
     result_dir = Path(dat_dir) / "postprocessed result"
@@ -98,63 +91,46 @@ def main():
             data_out["Diss._Energy(kPa)"] = np.hstack(([0], integrate.cumtrapz(data_out["q____(kPa)"] / 2 / data_out["p'___(kPa)_base"] ,  data_out["gamma_based_EDT(%)"] / 100)))
 
         # draw time-dependent figures
-        fig = plt.figure(figsize=(8, 6))
-        fig.subplots_adjust(left=0.23, right=0.77)
-        
-        ax1 = fig.add_subplot(111)
+        fig = plt.figure(figsize=(6, 10))
+        fig.subplots_adjust(left=0.23, right=0.77, hspace=0)
+
+        ax1 = fig.add_subplot(511)
         ax1.plot(data_out["Time(s)"], data_out["q____(kPa)"], color="k", linewidth = 0.75, label="Deviatoric Stress, " + r"$q$(kPa)")
-        ax1.set_ylabel("Deviatoric Stress, " + r"$q$(kPa)",color="k",fontsize=14)
-        ax1.set_xlabel(r"Ellapsed Time, " + r"$t$(sec)",color="k",fontsize=14)
-        ax1.yaxis.label.set_color("k")
-        ax1.tick_params(axis='both', colors="k", direction='in')
-
-        ax2=ax1.twinx()
-        ax2.plot(data_out["Time(s)"], data_out["e(a)_(%)_"], color="b", linewidth = 0.75, label="Axial Strain, " + r"$\varepsilon_a$(%)")
-        ax2.set_ylabel("Axial Strain, " + r"$\varepsilon_a$(\%)",color="b",fontsize=14)
-        ax2.spines["right"].set_position(("axes", 1))
-        ax2.yaxis.label.set_color("b")
-        ax2.tick_params(axis='y', colors="b", direction='in')
-        ax2.spines['right'].set_color("b")
-        
-        ax3=ax1.twinx()
-        ax3.plot(data_out["Time(s)"], data_out["s(r)_(kPa)"], color="g", linewidth = 0.75, label="Total Stress, " + r"$\sigma_3$(kPa)")
-        ax3.set_ylabel("Total Stress, " + r"$\sigma_3$(kPa)",color="g",fontsize=14)
-        ax3.spines["right"].set_position(("axes", 1.2))
-        make_patch_spines_invisible(ax3)
-        ax3.spines["right"].set_visible(True)
-        ax3.yaxis.label.set_color("g")
-        ax3.tick_params(axis='y', colors="g", direction='in')
-        ax3.spines['right'].set_color("g")
-
-        ax4=ax1.twinx()
-        ax4.plot(data_out["Time(s)"], data_out["e(v)_(%)_"], color="r", linewidth = 0.75, label="Volumetric Strain, " + r"$\varepsilon_v$(%)")
-        ax4.set_ylabel("Volumetric Strain, " + r"$\varepsilon_v$(\%)",color="r",fontsize=14)
-        ax4.spines["left"].set_position(("axes", -0.2))
-        ax4.yaxis.set_label_position('left')
-        ax4.yaxis.set_ticks_position('left')
-        make_patch_spines_invisible(ax4)
-        ax4.spines["left"].set_visible(True)
-        ax4.yaxis.label.set_color("r")
-        ax4.tick_params(axis='y', colors="r", direction='in')
-        ax4.spines['left'].set_color("r")
-
-        """
-        ax5=ax1.twinx()
-        ax5.plot(data_out["Time(s)"], data_out["eLDT2(%)_"], color="c", linewidth = 0.75, label="LDT2 Strain, " + r"$\epsilon_{LDT2}$(%)")
-        ax5.set_ylabel("LDT2 Strain, " + r"$\epsilon_{LDT2}$(%)",color="c",fontsize=14)
-        ax5.spines["left"].set_position(("axes", -0.3))
-        ax5.yaxis.set_label_position('left')
-        ax5.yaxis.set_ticks_position('left')
-        make_patch_spines_invisible(ax5)
-        ax5.spines["left"].set_visible(True)
-        ax5.yaxis.label.set_color("c")
-        ax5.tick_params(axis='y', colors="c", direction='in')
-        ax5.spines['left'].set_color("c")
-        """
+        ax1.set_ylabel("Deviatoric Stress, " + r"$q$(kPa)",color="k",fontsize=10)
+        plt.setp(ax1.get_xticklabels(), visible=False)
+        ax1.tick_params(axis='x', which='both', length=0)
+        ax1.grid(axis="x", linestyle=":", linewidth=0.5, color="k")
         plt.title(file_name.replace('_', '\_'))
+
+        ax2 = fig.add_subplot(512)
+        ax2.plot(data_out["Time(s)"], data_out["e(a)_(%)_"], color="b", linewidth = 0.75, label="Axial Strain, " + r"$\varepsilon_a$(%)")
+        plt.setp(ax2.get_xticklabels(), visible=False)
+        ax2.tick_params(axis='x', which='both', length=0)
+        ax2.grid(axis="x", linestyle=":", linewidth=0.5, color="k")
+        ax2.set_ylabel("Axial Strain, " + r"$\varepsilon_a$(\%)",color="b",fontsize=10)
         
+        ax3 = fig.add_subplot(513)
+        ax3.plot(data_out["Time(s)"], data_out["s(r)_(kPa)"], color="g", linewidth = 0.75, label="Total Stress, " + r"$\sigma_3$(kPa)")
+        plt.setp(ax3.get_xticklabels(), visible=False)
+        ax3.tick_params(axis='x', which='both', length=0)
+        ax3.grid(axis="x", linestyle=":", linewidth=0.5, color="k")
+        ax3.set_ylabel("Total Stress, " + r"$\sigma_3$(kPa)",color="g",fontsize=10)
+
+        ax4 = fig.add_subplot(514)
+        ax4.plot(data_out["Time(s)"], data_out["e(v)_(%)_"], color="r", linewidth = 0.75, label="Volumetric Strain, " + r"$\varepsilon_v$(%)")
+        ax4.set_ylabel("Volumetric Strain, " + r"$\varepsilon_v$(\%)",color="r",fontsize=10)
+        ax4.grid(axis="x", linestyle=":", linewidth=0.5, color="k")
+        plt.setp(ax4.get_xticklabels(), visible=False)
+        ax4.tick_params(axis='x', which='both', length=0)
+
+        ax5 = fig.add_subplot(515)
+        ax5.plot(data_out["Time(s)"], data_out["eLDT2(%)_"], color="c", linewidth = 0.75, label="LDT2 Strain, " + r"$\epsilon_{LDT2}$(%)")
+        ax5.set_ylabel("LDT2 Strain, " + r"$\epsilon_{LDT2}$(%)",color="c",fontsize=10)
+        ax5.grid(axis="x", linestyle=":", linewidth=0.5, color="k")
+        ax5.set_xlabel("Ellapsed Time, " + r"$t$" + "(sec)")
+
         figure_path = result_dir / (Path(file_name).stem + ".png")
-        plt.savefig(figure_path, dpi=300)
+        plt.savefig(figure_path, dpi=300, bbox_inches='tight')
 
         # explicit garbage collection
         gc.collect
