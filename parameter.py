@@ -1,0 +1,13 @@
+dat_dir = r"E:\OneDrive\01_Research\01_Doctor\07_Triaxial_Test\07_Result\2020\20200430"
+time_oscillo = "16:21:02"
+time_pc = "16:11:47"
+accelerometer_distance = 120.16
+data_stage = 1 # 0:precon 1:consolidation 2:liquefaction
+LDT_installment = False
+ClipGauge_installment = False
+axial_strain_parameter = 0 # 0:EDT 1:LDT
+threshold_time = -0.00001
+threshold_standard_deviation = 0.0005
+detection_method_for_triggered_point = 0 # 0:全体の最大値に対する倍率でせん断波が到達したとみなす閾値を検出する. 1:基線の標準偏差に対する倍率でせん断波が到達したとみなす閾値を検出する.
+magnification_for_maximum_value = 0.05
+magnification_standard_deviation = 100
